@@ -1,2 +1,2 @@
-# TAP-RetoCarrera
-Reto 5 del módulo de tópicos avanzados de programación (TAP) de la UVEG.
+# Reto 5 - Simulación de carreras
+Este es un ejemplo de cómo resolver el reto 5 de la simulación de carreras. Hay diversas formas de resolverlo.
