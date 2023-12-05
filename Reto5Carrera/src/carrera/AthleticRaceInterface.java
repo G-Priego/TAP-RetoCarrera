@@ -1,15 +1,12 @@
 package carrera;
 
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Random;
 import java.util.regex.Pattern;
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -51,7 +48,7 @@ public class AthleticRaceInterface extends JFrame{
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
     
-    public void addComponentes(){
+    private void addComponentes(){
         // Panel superior
         JPanel panelSuperior = new JPanel(new BorderLayout());
         panelSuperior.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -101,7 +98,7 @@ public class AthleticRaceInterface extends JFrame{
         this.add(panelInferior, BorderLayout.SOUTH);        
     }
     
-    public void addEventos(){
+    private void addEventos(){
         botonRegistrar.addActionListener(new BotonRegistrarListener());
         botonIniciar.addActionListener(new BotonIniciarListener());
         botonReiniciar.addActionListener(new BotonReiniciarListener());
@@ -111,27 +108,32 @@ public class AthleticRaceInterface extends JFrame{
     private class BotonRegistrarListener implements ActionListener{
         @Override
         public void actionPerformed(ActionEvent ae) {        
-            // Definir un patrón de nombre valido Ejemplo: Nombre Apellido
-            Pattern patronNombre = Pattern.compile("[A-Z][a-z]+\\s[A-Z][a-z]+");
-            
-            if (patronNombre.matcher(campoNombre.getText()).matches()) { //Validación de patrón establecido
-                if(listaNombres.contains(campoNombre.getText())){
+            // Definir un patrón de nombre valido Ejemplo: Nombre Apellido/nombre apellido
+            Pattern patronNombre = Pattern.compile("[A-Z]?[a-z]+\\s[A-Z]?[a-z]+");
+            //Pattern patronNombre = Pattern.compile("[A-Z][a-z]+\\s[A-Z][a-z]+");
+            String nombre = campoNombre.getText();
+            if (patronNombre.matcher(nombre).matches()) { //Validación de patrón establecido
+                nombre = nombre.toUpperCase();
+                if(listaNombres.contains(nombre)){
                     JOptionPane.showMessageDialog(null, "El participante ingresado ya existe", "Alerta", JOptionPane.WARNING_MESSAGE);
                 }else{
                     if(listaNombres.isEmpty() || listaNombres.size()<5){ // Validación de tamaño máximo de 5
-                        listaNombres.add(campoNombre.getText());
+                        listaNombres.add(nombre);
                         campoNombre.setText("");
                         if (listaNombres.size()==5){
                             setArregloRunner();
                         }
                     }else{
                         JOptionPane.showMessageDialog(null, "No se puede registrar más de 5 participantes ", "Alerta", JOptionPane.WARNING_MESSAGE);
-                        setArregloRunner();
+                        //setArregloRunner();
+                        /*ESTA ERA LA RAZON POR LA QUE AL INTENTAR REGISTRAR MAS DE 5 CORREDORES SE REPETIA
+                        LA CARRERA Y APARECIAN MULTIPLES VECES LOS CORREDORES EN EL TEXT AREA
+                        */
                     }
                 }
             } else {
                 // Si no cumple con el formato de Nombre Apellido
-                JOptionPane.showMessageDialog(null, "Ingrese un nombre válido. Ejemplo: Greta Priego", "Error", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Ingrese un nombre válido. Ejemplo: Greta Priego/greta priego", "Error", JOptionPane.WARNING_MESSAGE);
             }
             mostrarNombres();            
         }        
@@ -145,11 +147,11 @@ public class AthleticRaceInterface extends JFrame{
             }else if(listaNombres.size()<5){
                 JOptionPane.showMessageDialog(null, "Se requiere de 5 participantes ", "Alerta", JOptionPane.WARNING_MESSAGE);
             }
-            if (contador!=0){
+            if (contador !=0){
                 areaResultados.setText("");
             }
             if (!carreraEnCurso) {
-                contador++;
+                contador = 1;
                 // Deshabilitar el botón para evitar múltiples clics
                 botonIniciar.setEnabled(false);
                 iniciarCarrera();
@@ -159,7 +161,7 @@ public class AthleticRaceInterface extends JFrame{
     
     private void iniciarCarrera() { 
         carreraEnCurso = true;
-        for (int i = 0; i < listaRunner.size(); i++) {
+        for (int i = 0; i < 5; i++) {
             ThreadRunner thRunner = new ThreadRunner(listaRunner.get(i), areaResultados);
             Thread hilo = new Thread(thRunner);
             hilo.start();
